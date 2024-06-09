@@ -17,6 +17,7 @@ server_port = int(sys.argv[2])
 # python udpclient.py 192.168.128.128 12345
 def main():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
     client_socket.settimeout(timeout)
 
     bag = 0
@@ -30,7 +31,7 @@ def main():
         retry = 0
         while retry <= max_retry:
             # 请求，sequence_number、ver、其他内容
-            message = struct.pack('!I B', sequence_number, ver) + b'others'
+            message = struct.pack('!HB', sequence_number, ver) + b'others'
             time_send = time.time()  # 发送时间
 
             try:
@@ -40,8 +41,8 @@ def main():
                 response, _ = client_socket.recvfrom(1024)
                 time_receive = time.time()  # 接收时间
                 rtt = (time_receive - time_send) * 1000  # RTT（ms）
-                numbers, _ = struct.unpack('!I B', response[:5])  # 序列号
-                server_time = response[5:].decode('utf-8')  # 服务器时间
+                numbers, _ = struct.unpack('!HB', response[:3])  # 序列号
+                server_time = response[3:].decode('utf-8')  # 服务器时间
 
                 if time_begin is None:
                     time_begin = time_receive  # 响应开始
