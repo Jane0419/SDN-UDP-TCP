@@ -7,7 +7,7 @@ import struct
 # 配置选项
 server_ip = "0.0.0.0"  # ip
 server_port = 12345  # 端口
-rate = 0.2  # 可能性
+rate = 0.5  # 可能性
 size = 1024  # 缓冲区
 
 
@@ -26,7 +26,7 @@ def main():
             continue
 
         # 序列号、版本号
-        sequence_number, ver = struct.unpack('!I B', client_request[:5])
+        sequence_number, ver = struct.unpack('!HB', client_request[:3])
 
         # 时间
         timestamp = time.time()
@@ -34,7 +34,7 @@ def main():
         current_time = time.strftime('%H-%M-%S', local_time).encode('utf-8')
 
         # 序列号、版本号、时间
-        response = struct.pack('!I B', sequence_number, ver) + current_time
+        response = struct.pack('!HB', sequence_number, ver) + current_time
         server_socket.sendto(response, inf)
 
         print(f"响应 {inf}，序列号: {sequence_number}")
